@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Welcome to Videoflix</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        .email-container {
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            justify-content : flex-start;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .header img {
+            max-width: 150px;
+            display: block;
+            margin: 0 auto;
+        }
+        .banner img {
+            max-width: 100%;
+            border-radius: 10px;
+        }
+        .content {
+            text-align: center;
+            padding: 20px;
+        }
+        .content h1 p {
+            color:rgb(0, 0, 0);
+        }
+      
+        .button {
+            margin-top: 20px;
+        }
+        .button a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #2E3EDF;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .b{
+          color:  #2E3EDF; 
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: color:rgb(0, 0, 0);
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="banner">
+            <img src="https://paul-ivan.com/assets/img/extras/Capa_1.webp" alt="Welcome Banner">
+        </div>
+        <div class="content">
+            <h1>Dear, {{ user_name }}!</h1>
+            <p>Thank you for registering with <a href="videoflix.paul-ivan.com" class="b">Videoflix</a>. To complete your registration and verify your email address, please click the link below.</p>
+            <div class="button">
+                <a href="{{ activation_link }}">Activate account</a>
+            </div>
+        </div>
+        <div class="footer">
+            <p>If you did not create an account with us, please disregard this email. 
+              <br>
+              <br>
+
+              Best regards, 
+              <br>
+              <br>
+              
+              Your Videoflix Team</p>
+              <br>
+              <br>
+            <p>Need help? Contact us at <a href="mailto:support@videoflix.paul-ivan.com"> support@videoflix.paul-ivan.com</a></p>
+        </div>
+    </div>
+</body>
+</html>
