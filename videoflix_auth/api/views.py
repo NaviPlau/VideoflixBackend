@@ -26,7 +26,7 @@ class RegistrationView(APIView):
             send_welcome_email(
                 user_email=user.email,
                 user_name=user.username,
-                activation_link=f"http://127.0.0.1:8000/videoflix/api/activate/{uid}/{token}/"
+                activation_link=f"http://localhost:4200/activate-account/{uid}/{token}/"
             )
             return Response({
                 'message': 'You registered successfully',
@@ -68,6 +68,21 @@ class LoginView(APIView):
             )
         except User.DoesNotExist:
             return Response( {"message": "Invalid username or password."},  status=status.HTTP_401_UNAUTHORIZED )
+
+
+class TokenLoginView(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request, *args, **kwargs):
+        token = request.data.get('token')
+        try:
+            user = Token.objects.get(key=token).user
+            return Response(
+                {  "id": user.id, "username": user.username, "token": token }, status=status.HTTP_200_OK
+            )
+        except Token.DoesNotExist:  
+            return Response(
+                {"message": "Invalid token."}, status=status.HTTP_401_UNAUTHORIZED
+        )
         
 class PasswordResetView(APIView):
     permission_classes = [AllowAny]
@@ -78,7 +93,7 @@ class PasswordResetView(APIView):
             user = User.objects.get(email=email)
             token = str(uuid.uuid4()) 
             PasswordResetToken.objects.create(user=user, token=token)
-            reset_link = f"http://127.0.0.1:8000/videoflix/api/reset-password/confirm/{token}/"
+            reset_link = f"http://localhost:4200/reset-password/confirm/{token}/"
             send_password_reset_email(
                 user_email=user.email,
                 user_name=user.username,
@@ -86,7 +101,7 @@ class PasswordResetView(APIView):
             )
             return Response({'message': 'Password reset email sent successfully'}, status=status.HTTP_200_OK)
         except User.DoesNotExist:
-            return Response({'error': 'User with this email does not exist'}, status=status.HTTP_404_NOT_FOUND)  
+            return Response({'error': 'ERROR, ERROR, may the force be with you'}, status=status.HTTP_404_NOT_FOUND)  
         
 class PasswordResetConfirmView(APIView):
     permission_classes = [AllowAny]
