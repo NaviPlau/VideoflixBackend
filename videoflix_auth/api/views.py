@@ -101,7 +101,7 @@ class PasswordResetView(APIView):
             )
             return Response({'message': 'Password reset email sent successfully'}, status=status.HTTP_200_OK)
         except User.DoesNotExist:
-            return Response({'error': 'ERROR, ERROR, may the force be with you'}, status=status.HTTP_404_NOT_FOUND)  
+            return Response({'message': 'Password reset email sent successfully'}, status=status.HTTP_200_OK)  
         
 class PasswordResetConfirmView(APIView):
     permission_classes = [AllowAny]
