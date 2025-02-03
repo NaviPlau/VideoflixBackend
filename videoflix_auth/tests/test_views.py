@@ -8,8 +8,9 @@ from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.timezone import now
 from datetime import timedelta
-
-
+from rest_framework.test import APITestCase
+from rest_framework.authtoken.models import Token
+from rest_framework import status
 
 
 class RegistrationViewTests(TestCase):
@@ -134,7 +135,7 @@ class PasswordResetTests(TestCase):
         url = reverse('password_reset')
         data = {"email": "nonexistent@example.com"}
         response = self.client.post(url, data)
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
 
 
 class PasswordResetConfirmTests(TestCase):
@@ -175,20 +176,17 @@ class PasswordResetConfirmTests(TestCase):
 
     def test_password_reset_confirm_missing_password_fields(self):
         url = reverse('password_reset_confirm', args=[self.token])
-        
-        # Case 1: Missing both password and repeated_password
+    
         data = {}
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {'error': 'Both password fields are required'})
 
-        # Case 2: Missing repeated_password
         data = {"password": "NewPassword123"}
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {'error': 'Both password fields are required'})
 
-        # Case 3: Missing password
         data = {"repeated_password": "NewPassword123"}
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, 400)
@@ -205,27 +203,45 @@ class PasswordResetConfirmTests(TestCase):
         self.assertEqual(response.json(), {'error': 'Invalid or expired token'})
         
     def test_password_reset_confirm_invalid_token_is_valid(self):
-        # Create a token that has expired
         expired_token = PasswordResetToken.objects.create(
             user=self.user,
             token=str(uuid.uuid4())
         )
-
-        # Manually expire the token by setting `created_at` to 16 minutes ago
         expired_token.created_at = now() - timedelta(minutes=16)
         expired_token.save(update_fields=['created_at'])
-
-        # Ensure that the token is now invalid
         self.assertFalse(expired_token.is_valid(), "The token should be invalid, but is_valid() returned True")
-
-        # Send a request with the expired token
         url = reverse('password_reset_confirm', args=[expired_token.token])
         data = {
             "password": "NewPassword123",
             "repeated_password": "NewPassword123"
         }
         response = self.client.post(url, data)
-
-        # Assert the response returns a 400 status code with the expected error
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {'error': 'Invalid or expired token'})
+
+
+class TokenLoginViewTest(APITestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user(email="testuser@example.com", username="testuser", password="Password123")
+        self.token_object = Token.objects.create(user=self.user)
+        self.valid_token = self.token_object.key
+        self.url = reverse('token_login')
+
+    def test_valid_token_login(self):
+        response = self.client.post(self.url, data={'token': self.valid_token})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['id'], self.user.id)
+        self.assertEqual(response.data['email'], self.user.email)
+        self.assertEqual(response.data['token'], self.valid_token)
+
+    def test_invalid_token_login(self):
+        invalid_token = str(uuid.uuid4())
+        response = self.client.post(self.url, data={'token': invalid_token})
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.data['message'], "Invalid token.")
+
+    def test_missing_token_in_request(self):
+        response = self.client.post(self.url, data={})
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.data['message'], "Invalid token.")

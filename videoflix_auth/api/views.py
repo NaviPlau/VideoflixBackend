@@ -77,7 +77,7 @@ class TokenLoginView(APIView):
         try:
             user = Token.objects.get(key=token).user
             return Response(
-                {  "id": user.id, "username": user.username, "token": token }, status=status.HTTP_200_OK
+                {  "id": user.id, "email": user.email, "token": token }, status=status.HTTP_200_OK
             )
         except Token.DoesNotExist:  
             return Response(
