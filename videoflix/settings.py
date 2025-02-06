@@ -13,17 +13,16 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 from dotenv import load_dotenv
 import os
+from urllib.parse import urlparse
 
 load_dotenv()
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -44,7 +43,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
-    'videoflix_auth'
+    'videoflix_auth',
+    'videoflix_videos',
 ]
 
 MIDDLEWARE = [
@@ -96,14 +96,24 @@ DATABASES = {
 }
 
 
+
 REDIS_URL = os.getenv('REDIS_URL', 'redis://127.0.0.1:6379/1')
 REDIS_PASSWORD = os.getenv('REDIS_PASSWORD', None)
 
+parsed_url = urlparse(REDIS_URL)
+
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+CELERY_TASK_DEFAULT_QUEUE = 'default'
+CELERY_TASK_SERIALIZER = 'json'
+if REDIS_PASSWORD:
+    CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
+else:
+    CELERY_BROKER_URL = REDIS_URL
 
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': REDIS_URL,
+        'LOCATION': CELERY_BROKER_URL,
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
             'PASSWORD': REDIS_PASSWORD,
