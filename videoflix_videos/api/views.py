@@ -17,3 +17,13 @@ class UploadVideoView(APIView):
                 'task_id': task.id,
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
+
+class VideoListView(APIView):
+    def get(self, request, *args, **kwargs):
+        videos = Video.objects.all()
+        serializer = VideoSerializer(videos, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    
