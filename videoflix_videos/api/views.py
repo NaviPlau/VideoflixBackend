@@ -3,7 +3,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from videoflix_videos.models import Video
 from ..tasks import convert_to_hls
-from .serializers import VideoSerializer 
+from .serializers import VideoSerializer, VideoSerializerSingle
+from django.shortcuts import get_object_or_404
 
 class UploadVideoView(APIView):
     def post(self, request, *args, **kwargs):
@@ -26,4 +27,11 @@ class VideoListView(APIView):
         serializer = VideoSerializer(videos, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
     
+    
+class SingleVideoView(APIView):
+    def get(self, request, video_id, *args, **kwargs):
+        video = get_object_or_404(Video, id=video_id)
+        serializer = VideoSerializerSingle(video, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     
