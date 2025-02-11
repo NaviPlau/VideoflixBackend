@@ -33,3 +33,6 @@ trigger_task.py
 .vscode/
 .idea/
 *.swp
+
+videoflix/celery.py 
+

@@ -36,6 +36,7 @@ class RegistrationView(APIView):
 
 
 class ActivateAccountView(APIView):
+    permission_classes = [AllowAny]
     def get(self, request, uidb64, token, *args, **kwargs):
         try:
             uid = urlsafe_base64_decode(uidb64).decode()
