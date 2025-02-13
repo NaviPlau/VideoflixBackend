@@ -31,7 +31,7 @@ def convert_to_hls(video_id):
                 '-b:v', v['bitrate'], '-c:v', 'h264', '-preset', 'fast',
                 '-c:a', 'aac', '-b:a', '128k',
                 '-f', 'hls',
-                '-hls_time', '10',
+                '-hls_time', '5',
                 '-hls_list_size', '0',
                 '-hls_segment_filename', os.path.join(output_dir, f'segment_{v["variant"]}_%03d.ts'),
                 os.path.join(output_dir, f'variant_{v["variant"]}.m3u8')
