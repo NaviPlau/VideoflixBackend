@@ -5,6 +5,14 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from datetime import datetime, timedelta
 
 def send_welcome_email(user_email, user_name, activation_link):
+    """
+    Sends a welcome email to a user with an activation link.
+
+    Args:
+        user_email (str): The user's email address.
+        user_name (str): The user's name.
+        activation_link (str): The link to activate the user's account.
+    """
     context = {
         'user_name': user_name,
         'activation_link': activation_link,
@@ -23,6 +31,14 @@ def send_welcome_email(user_email, user_name, activation_link):
     
     
 def send_password_reset_email(user_email, user_name, reset_link):
+    """
+    Sends a password reset email to a user with a reset link.
+
+    Args:
+        user_email (str): The user's email address.
+        user_name (str): The user's name.
+        reset_link (str): The link to reset the user's password.
+    """
     context = {
         'user_name': user_name,
         'reset_link': reset_link,

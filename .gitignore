@@ -27,7 +27,6 @@ htmlcov/
 
 # Environment variables
 .env
-trigger_task.py
 
 # IDE and editor files
 .vscode/

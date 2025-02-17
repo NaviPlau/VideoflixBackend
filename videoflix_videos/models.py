@@ -12,6 +12,10 @@ class Video(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
+        """
+        Returns the string representation of the Video instance, which is the title of the video.
+        """
+
         return self.title
 
 
@@ -23,6 +27,11 @@ class UserVideoProgress(models.Model):
     last_viewed_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
+        """
+        Returns a string representation of the UserVideoProgress instance, 
+        which includes the username of the user and the title of the video.
+        """
+
         return f"{self.user.username} - {self.video.title}"
 
 

@@ -8,6 +8,27 @@ logger = logging.getLogger(__name__)
 
 @shared_task
 def convert_to_hls(video_id):
+    """
+    Convert a video to HLS format with multiple quality variants.
+
+    This Celery task takes a video ID, retrieves the corresponding video
+    object, and converts the video file to HLS format with multiple 
+    quality variants using ffmpeg. The task generates four HLS 
+    playlists with different resolutions and bitrates, and creates a 
+    master playlist containing all variants.
+
+    Args:
+        video_id (int): The ID of the video to be converted.
+
+    Logs:
+        Info logs indicating the start and successful completion of the 
+        conversion, as well as any commands run during the process.
+        Error logs if any exceptions occur during the task execution.
+
+    The converted HLS playlists are saved to the media storage, and the 
+    video object is updated with the path to the master playlist.
+    """
+
     logger.info(f"Starting HLS conversion for video ID: {video_id}")
 
     try:
@@ -60,6 +81,16 @@ def convert_to_hls(video_id):
 
 @shared_task(queue='default')
 def test_celery_task():
+    """
+    A simple Celery task for testing purposes.
+
+    This task simulates a short delay and prints messages indicating
+    the start and completion of the task.
+
+    Returns:
+        str: A message indicating that the task has completed.
+    """
+
     print("Task started!")
     time.sleep(1)
     print("Task completed!")

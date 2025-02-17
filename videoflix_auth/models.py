@@ -9,4 +9,8 @@ class PasswordResetToken(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def is_valid(self):
+        """
+        Return True if the token is valid, False otherwise. A valid token is
+        one that has been created within the last 15 minutes.
+        """
         return now() < self.created_at + timedelta(minutes=15)

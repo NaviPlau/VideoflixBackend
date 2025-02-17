@@ -18,6 +18,16 @@ class RegistrationView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
+        """
+        Register a new user.
+        This API endpoint takes a POST request with the following fields:
+        - email (string): The email address of the user.
+        - password (string): The password to use for the user.
+        - repeated_password (string): The repeated password to check against the password.
+        Returns a JSON response with the following keys:
+        - message (string): A message indicating that the user was registered successfully.
+        - user_id (int): The ID of the user that was just registered.
+        """
         serializer = RegistrationSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
@@ -38,6 +48,19 @@ class RegistrationView(APIView):
 class ActivateAccountView(APIView):
     permission_classes = [AllowAny]
     def get(self, request, uidb64, token, *args, **kwargs):
+        """
+        Activate a user's account using the activation link.
+
+        This API endpoint takes a GET request with the following parameters:
+        - uidb64 (string): The base64-encoded user ID.
+        - token (string): The activation token.
+
+        Returns a JSON response with the following keys:
+        - message (string): A message indicating that the account was activated successfully.
+        - error (string): An error message if the activation link is invalid or has expired, or if the user is invalid.
+
+        The endpoint returns HTTP 200 if the account is activated successfully, and HTTP 400 if there is an error.
+        """
         try:
             uid = urlsafe_base64_decode(uidb64).decode()
             user = User.objects.get(pk=uid)
@@ -55,6 +78,20 @@ class LoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
+        """
+        Authenticate a user using email and password.
+
+        This API endpoint takes a POST request with the following fields:
+        - email (string): The email address of the user.
+        - password (string): The password of the user.
+
+        Returns a JSON response with the following keys:
+        - id (int): The ID of the user.
+        - username (string): The username of the user.
+        - token (string): The authentication token of the user.
+
+        The endpoint returns HTTP 200 if the authentication is successful, HTTP 401 if the username or password is invalid, and HTTP 403 if the user has not activated their account yet.
+        """
         username = request.data.get('email')  
         password = request.data.get('password')
         try:
@@ -74,6 +111,19 @@ class LoginView(APIView):
 class TokenLoginView(APIView):
     permission_classes = [AllowAny]
     def post(self, request, *args, **kwargs):
+        """
+        Authenticate a user using the authentication token.
+
+        This API endpoint takes a POST request with the following field:
+        - token (string): The authentication token of the user.
+
+        Returns a JSON response with the following keys:
+        - id (int): The ID of the user.
+        - email (string): The email address of the user.
+        - token (string): The authentication token of the user.
+
+        The endpoint returns HTTP 200 if the authentication is successful, and HTTP 401 if the token is invalid.
+        """
         token = request.data.get('token')
         try:
             user = Token.objects.get(key=token).user
@@ -85,10 +135,22 @@ class TokenLoginView(APIView):
                 {"message": "Invalid token."}, status=status.HTTP_401_UNAUTHORIZED
         )
         
+        
 class PasswordResetView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
+        """
+        Send a password reset email to the user.
+
+        This API endpoint takes a POST request with the following field:
+        - email (string): The email address of the user.
+
+        Returns a JSON response with the following key:
+        - message (string): A message indicating that the password reset email was sent successfully.
+
+        The endpoint returns HTTP 200 if the email is sent successfully.
+        """
         email = request.data.get('email')
         try:
             user = User.objects.get(email=email)
@@ -104,10 +166,31 @@ class PasswordResetView(APIView):
         except User.DoesNotExist:
             return Response({'message': 'Password reset email sent successfully'}, status=status.HTTP_200_OK)  
         
+        
 class PasswordResetConfirmView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
+        """
+        Confirm and set a new password for the user using a password reset token.
+
+        This API endpoint takes a POST request with the following fields:
+        - password (string): The new password for the user.
+        - repeated_password (string): The repeated password for confirmation.
+
+        The endpoint checks if the provided token is valid and not expired, 
+        then sets the new password for the user if the token is valid and 
+        both password fields match.
+
+        Returns a JSON response with the following keys:
+        - message (string): A message indicating that the password was reset successfully.
+        - error (string): An error message if the token is invalid or expired, or if 
+        the password fields are missing or do not match.
+
+        The endpoint returns HTTP 200 if the password is reset successfully, and HTTP 400 
+        if there is an error.
+        """
+
         token = kwargs.get('token')
         password = request.data.get('password')
         repeated_password = request.data.get('repeated_password')

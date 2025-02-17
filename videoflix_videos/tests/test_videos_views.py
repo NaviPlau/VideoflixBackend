@@ -28,8 +28,11 @@ class VideoAPITestCase(APITestCase):
             viewed=True
         )
 
-    def test_upload_video(self):
-        """Test uploading a new video"""
+    def test_upload_video_as_admin(self):
+        """Test uploading a new video as an admin"""
+        admin_user = User.objects.create_superuser(username='adminuser', password='adminpassword')
+        self.client.force_authenticate(user=admin_user)
+
         url = "/videoflix/api/videos/upload/"
         data = {
             "title": "New Test Video",
@@ -86,14 +89,19 @@ class VideoAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         
     def test_upload_video_invalid(self):
-        """Test uploading a video with missing fields (should fail)"""
+        """Test uploading a video with missing fields (should fail, even for admin users)"""
+        admin_user = User.objects.create_superuser(username='adminuser2', password='adminpassword2')
+        self.client.force_authenticate(user=admin_user) 
+
         url = "/videoflix/api/videos/upload/"
         data = {
             "title": "Invalid Video",
         }
         response = self.client.post(url, data, format="multipart")
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST) 
         self.assertIn("file", response.data)
+
 
     
     
