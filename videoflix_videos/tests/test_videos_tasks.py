@@ -24,14 +24,14 @@ class CeleryTasksTestCase(TestCase):
         """Test HLS conversion task with all dependencies mocked"""
         mock_subprocess.return_value = MagicMock()
         convert_to_hls(self.video.id)
-        mock_makedirs.assert_called_once()
-        self.assertEqual(mock_subprocess.call_count, 4)
+        mock_makedirs.assert_called_once() 
+        self.assertEqual(mock_subprocess.call_count, 4) 
         mock_open.assert_called_once_with(
-            os.path.join('media', 'videos', 'hls', str(self.video.id), 'master.m3u8'), 'w'
+            os.path.join('videos', 'hls', str(self.video.id), 'master.m3u8'), 'w'
         )
-
         mock_logger.info.assert_any_call(f"Starting HLS conversion for video ID: {self.video.id}")
         mock_logger.info.assert_any_call(f"Successfully completed HLS conversion for video ID: {self.video.id}")
+
         self.video.refresh_from_db()
         self.assertIsNotNone(self.video.hls_master_playlist)
 

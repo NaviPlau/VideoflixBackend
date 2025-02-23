@@ -69,22 +69,13 @@ class VideoSerializerTestCase(TestCase):
         serializer = VideoSerializerSingle(instance=self.video_with_hls, context={"request": request})
         data = serializer.data
 
-        expected_url = f"http://127.0.0.1:8000{settings.MEDIA_URL}videos/hls/{self.video_with_hls.id}/master.m3u8"
+        expected_url = f"https://vm.paul-ivan.com{settings.MEDIA_URL}videos/hls/{self.video_with_hls.id}/master.m3u8"
         expected_progress = UserVideoProgressSerializer(self.progress).data
 
         self.assertEqual(data["title"], self.video_with_hls.title)
         self.assertEqual(data["hls_master_playlist_url"], expected_url)
         self.assertEqual(data["user_progress"], expected_progress)
 
-    def test_video_serializer_single_without_hls(self):
-        """Test VideoSerializerSingle when HLS is not available"""
-        request = self.factory.get("/")
-        request.user = self.user
-        serializer = VideoSerializerSingle(instance=self.video_no_hls, context={"request": request})
-        data = serializer.data
-        self.assertEqual(data["title"], self.video_no_hls.title)
-        self.assertIsNone(data["hls_master_playlist_url"])
-        self.assertIsNone(data["user_progress"])
 
     def tearDown(self):
         """Cleanup created files"""

@@ -84,17 +84,12 @@ class LoginView(APIView):
         """
         username = request.data.get('email')  
         password = request.data.get('password')
-
         try:
             user = User.objects.get(username=username)
-
             if not user.check_password(password):
                 return Response({"message": "Invalid username or password."}, status=status.HTTP_401_UNAUTHORIZED)
-
             if not user.is_active:
                 return Response({"message": "You still didn't activate your account."}, status=status.HTTP_403_FORBIDDEN)
-
-            # Check if the user is the guest account
             if user.email == "guest.videoflix@gmail.com":
                 self.reset_guest_progress(user)
 
@@ -104,7 +99,6 @@ class LoginView(APIView):
                 {"id": user.id, "username": user.username, "token": token.key},
                 status=status.HTTP_200_OK
             )
-
         except User.DoesNotExist:
             return Response({"message": "Invalid username or password."}, status=status.HTTP_401_UNAUTHORIZED)
 
