@@ -110,9 +110,10 @@ class LoginView(APIView):
 
     def reset_guest_progress(self, user):
         """
-        Resets the progress of all videos for the guest user.
+        Deletes all UserVideoProgress records for the guest user.
         """
-        UserVideoProgress.objects.filter(user=user).update(last_viewed_position=0.0, viewed=False)
+        UserVideoProgress.objects.filter(user=user).delete()
+
 
 
 class TokenLoginView(APIView):
