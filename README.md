@@ -92,18 +92,16 @@ celery -A videoflix worker --loglevel=info
 You need to create your own `celery.py` file for Celery configuration.
 
 
-## Tests report 
-https://docs.paul-ivan.com/videoflix-backend/report.html?sort=result
+## 📊 Tests Report  
+[View Tests Report](https://docs.paul-ivan.com/videoflix-backend/report.html?sort=result)  
 
+## 📈 Tests Coverage Report  
+[View Coverage Report](https://docs.paul-ivan.com/videoflix-backend/htmlcov/index.html)  
 
-## Tests coverage report 
-https://docs.paul-ivan.com/videoflix-backend/htmlcov/index.html
+## 🔗 API Endpoints  
+For detailed API documentation, check out [ENDPOINTS.md](ENDPOINTS.md).  
 
-
-## API Endpoints
-For detailed API documentation, see [ENDPOINTS.md](ENDPOINTS.md).
-
-
-## Contact
-Contact me through my portfolio https://paul-ivan.com
+## 📬 Contact  
+You can reach me through my portfolio:  
+[paul-ivan.com](https://paul-ivan.com) 
 
