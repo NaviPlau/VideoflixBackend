@@ -45,7 +45,7 @@ class VideoSerializerSingle(serializers.ModelSerializer):
         """
         
         if obj.hls_master_playlist:
-            return f"http://127.0.0.1:8000{settings.MEDIA_URL}videos/hls/{obj.id}/master.m3u8"
+            return f"https://vm.paul-ivan.com/media/videos/hls/{obj.id}/master.m3u8"
         return None
 
     def get_user_progress(self, obj):

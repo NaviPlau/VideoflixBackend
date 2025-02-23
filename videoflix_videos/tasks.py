@@ -34,7 +34,7 @@ def convert_to_hls(video_id):
     try:
         video = Video.objects.get(id=video_id)
         input_file = video.file.path
-        output_dir = os.path.join('media', 'videos', 'hls', str(video.id))
+        output_dir = os.path.join('videos', 'hls', str(video.id))
         os.makedirs(output_dir, exist_ok=True)
         variants = [
             {'scale': '426x240', 'bitrate': '500k', 'variant': '0'},
@@ -44,7 +44,7 @@ def convert_to_hls(video_id):
         ]
         for v in variants:
             cmd = [
-                'ffmpeg', '-i', input_file,
+                '/usr/bin/ffmpeg', '-i', input_file,
                 '-vf', f'scale={v["scale"]}',
                 '-b:v', v['bitrate'], '-c:v', 'h264', '-preset', 'fast',
                 '-c:a', 'aac', '-b:a', '128k',
@@ -72,7 +72,8 @@ def convert_to_hls(video_id):
 
         with open(master_playlist, 'w') as f:
             f.write(master_content.strip())
-        video.hls_master_playlist = master_playlist
+        video.hls_master_playlist = f"videos/hls/{video.id}/master.m3u8"
+
         video.save()
         logger.info(f"Successfully completed HLS conversion for video ID: {video_id}")
 

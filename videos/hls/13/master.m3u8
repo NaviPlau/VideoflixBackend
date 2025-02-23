@@ -1,0 +1,9 @@
+#EXTM3U
+                #EXT-X-STREAM-INF:BANDWIDTH=500000,RESOLUTION=426x240
+                variant_0.m3u8
+                #EXT-X-STREAM-INF:BANDWIDTH=1000000,RESOLUTION=640x360
+                variant_1.m3u8
+                #EXT-X-STREAM-INF:BANDWIDTH=2500000,RESOLUTION=1280x720
+                variant_2.m3u8
+                #EXT-X-STREAM-INF:BANDWIDTH=5000000,RESOLUTION=1920x1080
+                variant_3.m3u8
