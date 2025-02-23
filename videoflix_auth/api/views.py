@@ -12,6 +12,7 @@ from django.utils.http import urlsafe_base64_decode
 import uuid
 from django.contrib.auth.models import User
 from videoflix_auth.models import PasswordResetToken
+from videoflix_videos.models import UserVideoProgress
 
 
 class RegistrationView(APIView):
@@ -80,32 +81,38 @@ class LoginView(APIView):
     def post(self, request, *args, **kwargs):
         """
         Authenticate a user using email and password.
-
-        This API endpoint takes a POST request with the following fields:
-        - email (string): The email address of the user.
-        - password (string): The password of the user.
-
-        Returns a JSON response with the following keys:
-        - id (int): The ID of the user.
-        - username (string): The username of the user.
-        - token (string): The authentication token of the user.
-
-        The endpoint returns HTTP 200 if the authentication is successful, HTTP 401 if the username or password is invalid, and HTTP 403 if the user has not activated their account yet.
         """
         username = request.data.get('email')  
         password = request.data.get('password')
+
         try:
             user = User.objects.get(username=username)
+
             if not user.check_password(password):
-                return Response( {"message": "Invalid username or password."}, status=status.HTTP_401_UNAUTHORIZED)
+                return Response({"message": "Invalid username or password."}, status=status.HTTP_401_UNAUTHORIZED)
+
             if not user.is_active:
-                return Response( {"message": "You still didn't activate your account."}, status=status.HTTP_403_FORBIDDEN)
+                return Response({"message": "You still didn't activate your account."}, status=status.HTTP_403_FORBIDDEN)
+
+            # Check if the user is the guest account
+            if user.email == "guest.videoflix@gmail.com":
+                self.reset_guest_progress(user)
+
             token, _ = Token.objects.get_or_create(user=user)
+
             return Response(
-                {  "id": user.id, "username": user.username, "token": token.key }, status=status.HTTP_200_OK
+                {"id": user.id, "username": user.username, "token": token.key},
+                status=status.HTTP_200_OK
             )
+
         except User.DoesNotExist:
-            return Response( {"message": "Invalid username or password."},  status=status.HTTP_401_UNAUTHORIZED )
+            return Response({"message": "Invalid username or password."}, status=status.HTTP_401_UNAUTHORIZED)
+
+    def reset_guest_progress(self, user):
+        """
+        Resets the progress of all videos for the guest user.
+        """
+        UserVideoProgress.objects.filter(user=user).update(last_viewed_position=0.0, viewed=False)
 
 
 class TokenLoginView(APIView):
