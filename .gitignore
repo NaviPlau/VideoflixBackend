@@ -38,3 +38,5 @@ videoflix/celery.py
 _build/
 .DS_Store
 env/
+static/
+videos/hls/
